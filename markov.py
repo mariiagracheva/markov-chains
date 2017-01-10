@@ -1,4 +1,5 @@
-from random import choice
+#from random import choice
+import random
 
 
 def open_and_read_file(file_path):
@@ -44,8 +45,15 @@ def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
     text = ""
+    random_key = random.sample(chains, 1)[0]
+    text = random_key[0] + " " + random_key[1]
 
-    # your code goes here
+    next_key = random_key
+
+    while len(text.split()) < 10:
+        next_word = random.sample(chains[next_key], 1)[0]
+        text += " " + next_word
+        next_key = (next_key[1], next_word)
 
     return text
 
