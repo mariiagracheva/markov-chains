@@ -1,5 +1,6 @@
 #from random import choice
 import random
+import sys
 
 
 def open_and_read_file(file_path):
@@ -13,8 +14,8 @@ def open_and_read_file(file_path):
     return data_text
 
 
-def make_chains(text_string):
-    """Takes input text as string; returns _dictionary_ of markov chains.
+def make_chains(text_string, n_gram):
+    """Takes input text as string and size of token; returns _dictionary_ of markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
     and the value would be a list of the word(s) that follow those two
@@ -26,17 +27,19 @@ def make_chains(text_string):
         {('hi', 'there'): ['mary', 'juanita'], ('there', 'mary'): ['hi'], ('mary', 'hi': ['there']}
     """
     words = text_string.split()
+
     #extend our string with two first words
-    words = words[:] + words[:2]
-
+    words = words[:] + words[:n_gram]
     chains = {}
+    key_chains = []
 
-    for index in xrange(len(words) - 2):
-        key_chains = (words[index], words[index+1])
-        if key_chains in chains.keys():
-            chains[key_chains].append(words[index + 2])
+    # create all n-gramms from text_string
+    for index in xrange(len(words) - n_gram):
+        key_chains = tuple(words[index:index+n_gram])
+        if key_chains in chains:
+            chains[key_chains].append(words[index + n_gram])
         else:
-            chains[key_chains] = [words[index+2]]
+            chains[key_chains] = [words[index+n_gram]]
 
     return chains
 
@@ -44,27 +47,32 @@ def make_chains(text_string):
 def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
-    text = ""
+    text = []
+    #start with a random key from chains
     random_key = random.sample(chains, 1)[0]
-    text = random_key[0] + " " + random_key[1]
+    #add all words from key to text list
+    for key in random_key:
+        text.append(key)
 
+    # add next word to text, create new next_key
     next_key = random_key
+    while len(text) < 10:
+        next_word = random.choice(chains[next_key]) #string
+        text.append(next_word) #list
+        next_key = next_key[1:] + tuple([next_word])
 
-    while len(text.split()) < 10:
-        next_word = random.sample(chains[next_key], 1)[0]
-        text += " " + next_word
-        next_key = (next_key[1], next_word)
-
-    return text
+    return " ".join(text)
 
 
-input_path = "green-eggs.txt"
+#input_path = "green-eggs.txt"
+input_path = sys.argv[1]
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+size_n_gram = int(raw_input("Enter size of n_grams: "))
+chains = make_chains(input_text, size_n_gram)
 
 # Produce random text
 random_text = make_text(chains)
