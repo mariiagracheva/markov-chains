@@ -35,11 +35,11 @@ def make_chains(text_string, n_gram):
 
     # create all n-gramms from text_string
     for index in xrange(len(words) - n_gram):
-        key_chains = tuple(words[index:index+n_gram])
+        key_chains = tuple(words[index:index + n_gram])
         if key_chains in chains:
             chains[key_chains].append(words[index + n_gram])
         else:
-            chains[key_chains] = [words[index+n_gram]]
+            chains[key_chains] = [words[index + n_gram]]
 
     return chains
 
@@ -49,7 +49,10 @@ def make_text(chains):
 
     text = []
     #start with a random key from chains
-    random_key = random.sample(chains, 1)[0]
+    # print chains
+    random_key = random.choice(chains.keys())
+    # print random_key
+
     #add all words from key to text list
     for key in random_key:
         text.append(key)
@@ -57,9 +60,9 @@ def make_text(chains):
     # add next word to text, create new next_key
     next_key = random_key
     while len(text) < 10:
-        next_word = random.choice(chains[next_key]) #string
-        text.append(next_word) #list
-        next_key = next_key[1:] + tuple([next_word])
+        next_word = random.choice(chains[next_key])  # string
+        text.append(next_word)  # list
+        next_key = next_key[1:] + (next_word, )
 
     return " ".join(text)
 
