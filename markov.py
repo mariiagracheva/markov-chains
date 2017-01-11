@@ -48,10 +48,9 @@ def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
     text = []
-    #start with a random key from chains
-    # print chains
-    random_key = random.choice(chains.keys())
-    # print random_key
+    #start with a random key from keys with first capital letter
+    capital_keys = [key for key in chains if key[0][0] == key[0][0].upper()]
+    random_key = random.choice(capital_keys)
 
     #add all words from key to text list
     for key in random_key:
@@ -59,7 +58,7 @@ def make_text(chains):
 
     # add next word to text, create new next_key
     next_key = random_key
-    while len(text) < 10:
+    while text[-1][-1] not in ['.', '?', '!']:
         next_word = random.choice(chains[next_key])  # string
         text.append(next_word)  # list
         next_key = next_key[1:] + (next_word, )
